@@ -81,7 +81,6 @@ instance (ToJSON (a (Id KindStar)), ToJSONField (b (Id KindStar))) => ToJSON ((a
 				in if v == Null then Object o else Object (H.insert k v o)
 			_ -> error "Expecting an object in toJSON method"
 
-
 instance FromJSON (X (Id KindStar)) where parseJSON _ = return X
 instance (FromJSON (a (Id KindStar)), FromJSONField (b (Id KindStar))) => FromJSON ((a :& b) (Id KindStar)) where
 	parseJSON a@(Object o) = do
@@ -90,8 +89,8 @@ instance (FromJSON (a (Id KindStar)), FromJSONField (b (Id KindStar))) => FromJS
 		return $ rest :& it
 	parseJSON _ = mzero
 
-instance Default (Rec X) where def = X
-instance (Default (Rec a), Default f, Name n) => Default (Rec (a :& (n ::: f))) where
+instance Default (X style) where def = X
+instance (Default (a style), Default (App style f), Name n) => Default ((a :& (n ::: f)) style) where
 	def = def :& name := def
 
 {-

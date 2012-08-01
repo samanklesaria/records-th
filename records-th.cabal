@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                records-th
-version:             0.1.0.0
+version:             0.1.1.0
 synopsis:            Template Haskell declarations for the records package
 description:         Records-TH generates a variety of declarations for use with the records package,
                      including datatypes, Name, FromJSON, ToJSON and Default instances, and a default field type.

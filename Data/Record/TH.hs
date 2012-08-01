@@ -27,7 +27,7 @@ type family TypeOf c
 -- | A field representing its TypeOf
 type Field a = (a ::: TypeOf a)
 
--- | A record of kind *
+-- | A record using the Id type function as its sort
 type Rec a = a (Id KindStar)
 
 -- | Generate field declarations for the given strings. For example:
@@ -50,7 +50,7 @@ fields ss = liftM concat $ forM ss $ \(s,t,a)-> do
 		(AppT (ConT a) _) -> if a == ''Maybe then '(.:?) else '(.:)
 		_ -> '(.:)
 	let main = [
-		DataD [] n [] [NormalC n []] [''Show],
+		DataD [] n [] [NormalC n []] [''Show, ''Eq],
 		InstanceD [] (AppT (ConT ''Name) (ConT n)) [
 			FunD 'name [Clause [] (NormalB (ConE n)) []]],
 		TySynInstD ''TypeOf [ConT n] t']
@@ -92,6 +92,10 @@ instance (FromJSON (a (Id KindStar)), FromJSONField (b (Id KindStar))) => FromJS
 instance Default (X style) where def = X
 instance (Default (a style), Default (App style f), Name n) => Default ((a :& (n ::: f)) style) where
 	def = def :& name := def
+
+instance Eq (X style) where _ == _ = True
+instance (Eq (a style), Eq (App style f), Name n) => Eq ((a :& (n ::: f)) style) where
+	(as :& (_ := a)) == (bs :& (_ := b)) = as == bs && a == b
 
 {-
 instance ToJSON x => ToJSONField ((A ::: x) (Id KindStar)) where
